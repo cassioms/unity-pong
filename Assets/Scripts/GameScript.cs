@@ -15,7 +15,10 @@ public class GameScript : MonoBehaviour
     public Text player1ScoreText;
     public Text player2ScoreText;
     public Text scoreText;
+
     private bool scoreTextFading = false;
+    private float initialSpeed = 200.0f;
+    private float maxSpeed = 500.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +27,16 @@ public class GameScript : MonoBehaviour
         player2ScoreText.text = "Player 2: " + player2Score.ToString();
         scoreText.text = "Scored!";
         scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 0.0f);
+    }
+
+    void Update()
+    {
+        ball.transform.position = new Vector3(ball.transform.position.x, 6.0f, ball.transform.position.z);
+    }
+
+    int getRandomDirection()
+    {
+        return (Random.Range(-1.0f, 1.0f) > 0.0f) ? 1 : -1;
     }
 
     void FixedUpdate()
@@ -42,7 +55,8 @@ public class GameScript : MonoBehaviour
                     ball.GetComponent<Rigidbody>().velocity = ballSpeed;
                 } else
                 {
-                    ball.GetComponent<Rigidbody>().velocity = new Vector3((Random.value * 2.0f - 1.0f) * 10.0f, 0.0f, Random.value * 2.0f - 1.0f).normalized * 200.0f;
+                    ball.GetComponent<Rigidbody>().velocity = new Vector3(getRandomDirection() * (Random.Range(3.0f, 16.0f)) * 10.0f,
+                        0.0f, getRandomDirection() * Random.Range(5.0f, 10.0f)).normalized * initialSpeed;
                 }
             }
         }
@@ -61,7 +75,8 @@ public class GameScript : MonoBehaviour
 
     void resetGame()
     {
-        ball.transform.position = new Vector3(0.0f, 6.0f, 0.0f);
+        ball.transform.position = new Vector3(0.0f, 10.0f, 0.0f);
+        ball.transform.rotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
         ballSpeed = Vector3.zero;
         ball.GetComponent<Rigidbody>().velocity = ballSpeed;
         isPaused = true;
@@ -83,6 +98,15 @@ public class GameScript : MonoBehaviour
             player1ScoreText.text = "Player 1: " + player1Score.ToString();
             animateScoreText();
             resetGame();
+        }
+    }
+
+    void OnCollisionExit(Collision col)
+    {
+        if (ball.GetComponent<Rigidbody>().velocity.magnitude < maxSpeed &&
+            (col.gameObject.name == "Player1" || col.gameObject.name == "Player2"))
+        {
+            ball.GetComponent<Rigidbody>().velocity = ball.GetComponent<Rigidbody>().velocity * 1.05f;
         }
     }
 

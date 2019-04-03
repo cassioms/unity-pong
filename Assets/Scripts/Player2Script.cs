@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player2Script : MonoBehaviour
 {
 
-    private int playerVelocity = 200;
+    private float playerVelocity = 240.0f;
     private bool canGoUp = true;
     private bool canGoDown = true;
 
